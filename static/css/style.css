@@ -1,0 +1,20 @@
+table, tr, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+#pool-instances tr:nth-child(even) {
+  background: #CCF;
+}
+
+#pool-instances tr.active-annotation {
+  background: #FCC;
+}
+
+#pool-instances tr.conflict {
+  background: #F55;
+}
+
+#results {
+  margin-top: 1em;
+}

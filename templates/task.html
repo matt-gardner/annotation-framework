@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{{ task.name }}
+
+<div id="pools">
+  Pools
+  <ul>
+    {% for pool in pools %}
+    <li>{{ pool.name }} ({{ pool.num_instances }} instances)
+      <ul>
+        <li>
+          <a href="{% url 'annotate-pool-unannotated' pool.id %}">Unannotated instances</a>
+          ({{ pool.num_unannotated }}) <font size="6">&#8592;</font> Use this to annotate new instances
+        </li>
+        <li>
+          <a href="{% url 'annotate-pool-view-mine' pool.id %}">View and edit my ({{ username }}'s) annotations</a>
+        </li>
+        <li>
+          <a href="{% url 'annotate-pool-view-annotations' pool.id %}">View all annotations</a>
+        </li>
+        <li>
+          <a href="{% url 'annotate-pool-view-results' pool.id %}">See results</a>
+        </li>
+      </ul>
+    </li>
+
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

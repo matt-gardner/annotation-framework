@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Predicate: {{ pool.task.name }}</h1>
+<h3>Pool name: {{ pool.name }}</h3>
+
+Hints:
+<ul>
+  <li>An instance will be highlighted red if there are conflicting annotations for it.</li>
+</ul>
+
+<div id="pool-instances">
+  <table>
+    <tr>
+      <th>Instance</th>
+      <th>Annotations</th>
+    </tr>
+    {% for instance in instances %}
+    <tr class="instance{% if instance.conflict %} conflict{% endif %}">
+      <td>{{ instance.text }}</td>
+      {% for annotation in instance.annotations %}
+      <td>{{ annotation.user }}: {{ annotation.value }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

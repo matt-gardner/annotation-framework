@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Predicate: {{ pool.task.name }}</h1>
+
+<div id="stats">
+  <h3>Pool stats</h3>
+  <table>
+    <tr>
+      <td>Instances in pool</td>
+      <td>{{ total_instances }}</td>
+    </tr>
+    <tr>
+      <td>Conflicting annotations</td>
+      <td>{{ conflicting_annotations }}</td>
+    </tr>
+    <tr>
+      <td>Annotated</td>
+      <td>{{ annotated_instances }}</td>
+    </tr>
+    <tr>
+      <td>Annotated correct</td>
+      <td>{{ annotated_correct }}</td>
+    </tr>
+    <tr>
+      <td>Annotated maybe correct</td>
+      <td>{{ annotated_maybe }}</td>
+    </tr>
+  </table>
+</div>
+
+<div id="results">
+  <h3>Method performance</h3>
+  <table>
+    <tr>
+      <th>Method</th>
+      {% for metric in metrics %}
+      <th>{{ metric }}</th>
+      {% endfor %}
+    </tr>
+    {% for method in methods %}
+    <tr class="method">
+      <td>{{ method.name }}</td>
+      {% for value in method.display_metrics %}
+      <td>{{ value }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div id="charts">
+  <h3>Charts</h3>
+  <div id="precision-recall">
+  </div>
+</div>
+
+{% endblock %}
+
+{% block startup_scripts %}
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="/static/js/pool_results.js"></script>
+<script type="text/javascript">
+$.results = function(){};
+$.results.precision_recall = {{ precision_recall_data|safe }};
+</script>
+{% endblock %}

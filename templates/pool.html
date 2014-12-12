@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Predicate: {{ pool.task.name }}</h1>
+<h3>Pool name: {{ pool.name }}</h3>
+
+Hints:
+<ul>
+  <li>Press 'y' to mark the highlighted instance as correct</li>
+  <li>Press 'n' to mark the highlighted instance as incorrect</li>
+  <li>Press 'm' to mark the highlighted instance as maybe correct</li>
+  <li>Press 'j' to move down the instance list</li>
+  <li>Press 'k' to move up the instance list</li>
+  <li>Annotations are sent to the server immediately with an ajax request, so there is no need to click any "submit" button when you are
+    finish.  Just hit "back" on your browser to go back to the main page.</li>
+</ul>
+
+<div id="pool-instances">
+  <table>
+    <tr>
+      <th>Instance</th>
+      <th>Correct</th>
+      <th>Maybe correct</th>
+      <th>Not correct</th>
+    </tr>
+    {% for instance in instances %}
+    <tr class="instance{% if forloop.counter == 1 %} active-annotation{% endif %}"
+        instance="{{ instance.id }}">
+      <td><a href="{{ instance.search_link }}" target="_blank">{{ instance.text }}</a></td>
+      <td><input type="radio" name="annotation:{{ instance.id }}" value="correct"
+            {% if instance.annotation == "correct" %} checked {% endif %}></td>
+      <td><input type="radio" name="annotation:{{ instance.id }}" value="maybe"
+            {% if instance.annotation == "maybe" %} checked {% endif %}></td>
+      <td><input type="radio" name="annotation:{{ instance.id }}" value="incorrect"
+            {% if instance.annotation == "incorrect" %} checked {% endif %}></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div>
+<a href="{% url 'annotate-home' %}">Main page</a>
+<br>
+<a href="{% url 'annotate-task' pool.task.id %}">Task page</a>
+</div>
+
+{% endblock %}
+
+{% block startup_scripts %}
+<script type="text/javascript" src="/static/js/pool_annotate.js"></script>
+{% endblock %}

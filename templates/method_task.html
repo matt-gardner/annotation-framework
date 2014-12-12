@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{{ method.name }}</h1>
+<h2>{{ task.name }}</h2>
+
+<div id="pool-instances">
+  <table>
+    <tr>
+      <th>Prediction</th>
+      <th>Annotations</th>
+    </tr>
+    {% for instance in predictions %}
+    <tr class="instance{% if instance.conflict %} conflict{% endif %}">
+      <td>{{ instance.text }}</td>
+      {% for annotation in instance.annotations %}
+      <td>{{ annotation.user }}: {{ annotation.value }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </ul>
+</div>
+ {% endblock %}
