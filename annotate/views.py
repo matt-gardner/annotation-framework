@@ -222,7 +222,7 @@ def reconcile_annotations(annotations_list):
     annotations = defaultdict(str)
     for instance, values in annotations_list.iteritems():
         if len(values) == 1:
-            annotations[instance] = values[0]
+            annotations[instance] = list(values)[0]
         # TODO(matt): try to figure out some way to reconcile these, instead of
         # just dropping conflicting annotations.
     return annotations
