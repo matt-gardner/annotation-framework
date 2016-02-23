@@ -1,10 +1,11 @@
 from django.conf.urls import patterns, include, url
+from django.contrib.auth.views import login
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^', include('annotate.urls')),
 
     # Login stuff
-    (r'accounts/login/$',
-        'django.contrib.auth.views.login',
+    url(r'accounts/login/$',
+        login,
         {'template_name': 'login.html'}),
-)
+]
