@@ -102,15 +102,17 @@ def pool_edit_annotations(request, pool_id):
     context['pool'] = pool
     instances = []
     InstanceTuple = namedtuple('InstanceTuple',
-                               ['text', 'id', 'annotation', 'search_link'])
+                               ['text', 'id', 'info', 'annotation', 'search_link'])
     for instance in pool.instances.all():
         try:
             annotation = instance.annotation_set.get(user=request.user)
             annotation_value = annotation.value
         except Annotation.DoesNotExist:
             annotation_value = ''
+        print 'Instance:', instance.text, instance.id, instance.info
         instances.append(InstanceTuple(instance.text,
                                        instance.id,
+                                       instance.info,
                                        annotation_value,
                                        get_search_link(instance)))
     instances.sort(key=lambda x: x.annotation, reverse=True)
@@ -127,12 +129,13 @@ def pool_unannotated(request, pool_id):
     context['pool'] = pool
     instances = []
     InstanceTuple = namedtuple('InstanceTuple',
-                               ['text', 'id', 'annotation', 'search_link'])
+                               ['text', 'id', 'info', 'annotation', 'search_link'])
     for instance in pool.instances.all():
         if instance.annotation_set.count() > 0:
             continue
         instances.append(InstanceTuple(instance.text,
                                        instance.id,
+                                       instance.info,
                                        '',
                                        get_search_link(instance)))
     random.shuffle(instances)
@@ -148,7 +151,7 @@ def pool_view_all_annotations(request, pool_id):
     context['pool'] = pool
     instances = []
     InstanceTuple = namedtuple('InstanceTuple',
-                               ['text', 'id', 'annotations', 'conflict'])
+                               ['text', 'id', 'info', 'annotations', 'conflict', 'search_link'])
     AnnotationTuple = namedtuple('AnnotationTuple', ['user', 'value'])
     for instance in pool.instances.all():
         annotations = []
@@ -161,8 +164,10 @@ def pool_view_all_annotations(request, pool_id):
             conflict = True
         instances.append(InstanceTuple(instance.text,
                                        instance.id,
+                                       instance.info,
                                        annotations,
-                                       conflict))
+                                       conflict,
+                                       get_search_link(instance)))
     context['instances'] = instances
     return render(request, "view_pool.html", context)
 
@@ -297,6 +302,15 @@ def get_precision_recall_data(methods, num_annotations):
 
 
 def get_search_link(instance):
+    return get_freebase_link(instance)
+    #return get_google_search_link(instance)
+
+
+def get_freebase_link(instance):
+    return 'http://freebase.com' + instance.text
+
+
+def get_google_search_link(instance):
     text = instance.text
     if '(' in text:
         args = text.split('(')[1].split(')')[0].split(', ')

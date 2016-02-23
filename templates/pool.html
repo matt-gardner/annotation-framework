@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1>Predicate: {{ pool.task.name }}</h1>
+<h1>Predicate: {{ pool.task.name|linebreaks }}</h1>
 <h3>Pool name: {{ pool.name }}</h3>
 
 Hints:
@@ -20,6 +20,7 @@ Hints:
   <table>
     <tr>
       <th>Instance</th>
+      <th>Info</th>
       <th>Correct</th>
       <th>Maybe correct</th>
       <th>Not correct</th>
@@ -28,6 +29,7 @@ Hints:
     <tr class="instance{% if forloop.counter == 1 %} active-annotation{% endif %}"
         instance="{{ instance.id }}">
       <td><a href="{{ instance.search_link }}" target="_blank">{{ instance.text }}</a></td>
+      <td>{{ instance.info }}</td>
       <td><input type="radio" name="annotation:{{ instance.id }}" value="correct"
             {% if instance.annotation == "correct" %} checked {% endif %}></td>
       <td><input type="radio" name="annotation:{{ instance.id }}" value="maybe"

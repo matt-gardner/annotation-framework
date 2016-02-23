@@ -14,11 +14,13 @@ Hints:
   <table>
     <tr>
       <th>Instance</th>
+      <th>Info</th>
       <th>Annotations</th>
     </tr>
     {% for instance in instances %}
     <tr class="instance{% if instance.conflict %} conflict{% endif %}">
-      <td>{{ instance.text }}</td>
+      <td><a href="{{ instance.search_link }}" target="_blank">{{ instance.text }}</a></td>
+      <td>{{ instance.info }}</td>
       {% for annotation in instance.annotations %}
       <td>{{ annotation.user }}: {{ annotation.value }}</td>
       {% endfor %}

@@ -17,6 +17,7 @@ class Method(models.Model):
 class Instance(models.Model):
     text = models.CharField(max_length=1024)
     task = models.ForeignKey('Task')
+    info = models.CharField(max_length=1028, blank=True)
 
     class Meta:
         unique_together = ('text', 'task')
