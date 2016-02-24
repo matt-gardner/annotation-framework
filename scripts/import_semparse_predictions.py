@@ -38,17 +38,18 @@ def main(data_file):
     to_annotate = read_to_annotate_file(data_file)
     for (sentence, logical_form, pred) in to_annotate:
         task_name = sentence + '\n' + logical_form
+        task = get_task_from_name(tasks, task_name)
+        if not pred: continue
         rank = 0
         text = pred.mid
-        task = get_task_from_name(tasks, task_name)
         instance = get_instance(text, task, pred.name)
         task_instances[task].append(instance)
         instance.save()
-        prediction = Prediction(method=method,
-                                task=task,
-                                instance=instance,
-                                ranking=rank)
-        prediction.save()
+        try:
+            prediction = Prediction.objects.get(method=method, task=task, instance=instance, ranking=rank)
+        except Prediction.DoesNotExist:
+            prediction = Prediction(method=method, task=task, instance=instance, ranking=rank)
+            prediction.save()
         try:
             pool = InstancePool.objects.get(name=pool_name, task=task)
         except InstancePool.DoesNotExist:
@@ -57,8 +58,10 @@ def main(data_file):
         pool.instances.add(instance)
         if pred.annotation != '?':
             value = 'correct' if pred.annotation == '1' else 'incorrect'
-            annotation = Annotation(instance=instance, user=user, value=value)
-            annotation.save()
+            annotations = Annotation.objects.filter(instance=instance, value=value)
+            if len(annotations) == 0:
+                annotation = Annotation(instance=instance, user=user, value=value)
+                annotation.save()
 
 
 def read_to_annotate_file(filename):
@@ -69,7 +72,10 @@ def read_to_annotate_file(filename):
     for line in open(filename):
         if line == '\n':
             if sentence:
-                to_annotate.extend([(sentence, logical_form, pred) for pred in predictions])
+                if predictions:
+                    to_annotate.extend([(sentence, logical_form, pred) for pred in predictions])
+                else:
+                    to_annotate.append((sentence, logical_form, None))
             sentence = None
             logical_form = None
             predictions = []
@@ -79,6 +85,7 @@ def read_to_annotate_file(filename):
             predictions.append(process_prediction(line.strip()))
         else:
             sentence = line.strip()
+    to_annotate.extend([(sentence, logical_form, pred) for pred in predictions])
     return to_annotate
 
 
@@ -89,7 +96,6 @@ def process_prediction(line):
     mid = fields[1]
     url = fields[2]
     name = ' '.join(fields[3:])
-    print annotation, mid, url, name
     return PredTuple(annotation, mid, url, name)
 
 
