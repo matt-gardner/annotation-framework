@@ -11,6 +11,21 @@
   </ul>
 </div>
 
+<div id="leaderboard">
+  <h4>Leaderboard</h4>
+  <table>
+    <tr>
+      <th>User</th>
+      <th>Annotations</th>
+    </tr>
+    {% for user in top_users %}
+    <tr>
+      <td>{{ user.username }}</td>
+      <td>{{ user.annotation_count }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 <div id="tasks">
   <h3>Tasks</h3>
   <h5>Total tasks: {{ total_tasks }}</h5>

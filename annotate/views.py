@@ -1,5 +1,7 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.db.models import Count
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -27,6 +29,8 @@ def home(request):
     annotated_instances = set(
             Annotation.objects.values_list('instance_id', flat=True))
     pool_instances = defaultdict(list)
+    users = list(User.objects.exclude(username='pre-existing').annotate(annotation_count=Count('annotation')))
+    users.sort(key=lambda x: -x.annotation_count)
     for i in InstancePool.instances.through.objects.all():
         pool_instances[i.instancepool_id].append(i.instance_id)
     for task in Task.objects.all():
@@ -49,6 +53,7 @@ def home(request):
                                user=user))
     tasks.sort(key=lambda x: (-x.to_annotate, x.name))
     context['tasks'] = tasks
+    context['top_users'] = users[:5]
     context['total_tasks'] = len(tasks)
     context['total_annotations'] = Annotation.objects.count
     context['total_instances'] = Instance.objects.count
