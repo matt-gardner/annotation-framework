@@ -49,6 +49,7 @@ def home(request):
                                user=user))
     tasks.sort(key=lambda x: (-x.to_annotate, x.name))
     context['tasks'] = tasks
+    context['total_tasks'] = len(tasks)
     context['total_annotations'] = Annotation.objects.count
     context['total_instances'] = Instance.objects.count
     context['total_left_to_annotate'] = len(Instance.objects.filter(annotation__isnull=True))
@@ -115,7 +116,6 @@ def pool_edit_annotations(request, pool_id):
             annotation_value = annotation.value
         except Annotation.DoesNotExist:
             annotation_value = ''
-        print 'Instance:', instance.text, instance.id, instance.info
         instances.append(InstanceTuple(instance.text,
                                        instance.id,
                                        instance.info,
