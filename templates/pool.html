@@ -5,6 +5,23 @@
 <h1>Predicate: {{ pool.task.name|linebreaks }}</h1>
 <h3>Pool name: {{ pool.name }}</h3>
 
+<p>
+Instructions:
+<ul>
+  <li>Is the candidate entity an acceptable filler for the held-out entity?</li>
+  <li>To find the held-out entity, look for the variable in the logical form.</li>
+  <li>Example: "German company Siemens", (lambda (x) (and ((word-cat "company") x) ((word-rel "company_N/N") "/m/03j2n" x)))</li>
+  <li>In this example, the x is replacing Siemens, so the query is "German company ____".  If the candidate entity is a German company,
+    mark the instance as correct.</li>
+  <li>Only use "maybe correct" on really hard cases; I will look at ones you mark as "maybe correct".</li>
+  <li>Note: don't assume that for all of these tasks, correct answers will match the type of the held-out entity.  For example, if
+    "German" had been held out instead of "Siemens", correct fillers include "Munich", "European", "Energy", and many other things.</li>
+  <li>Note also: the "info" column gives names of the entity that were seen in training data.  Most of the time this is very helpful for
+    quick judgments, but they are also wrong sometimes.  When in doubt, click on the link to see the entity in Freebase.</li>
+</ul>
+
+</p>
+<p>
 Hints:
 <ul>
   <li>Press 'y' to mark the highlighted instance as correct</li>
@@ -13,8 +30,9 @@ Hints:
   <li>Press 'j' to move down the instance list</li>
   <li>Press 'k' to move up the instance list</li>
   <li>Annotations are sent to the server immediately with an ajax request, so there is no need to click any "submit" button when you are
-    finish.  Just hit "back" on your browser to go back to the main page.</li>
+    finish.  Just click on the "Main page" link to go back to the main page.</li>
 </ul>
+</p>
 
 <div id="pool-instances">
   <table>
