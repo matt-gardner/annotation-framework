@@ -13,17 +13,23 @@
 
 <div id="tasks">
   <h3>Tasks</h3>
+  <h5>Total instances: {{ total_instances }}</h5>
+  <h5>Total annotations: {{ total_annotations }}</h5>
+  <h5>Instances left to annotate: {{ total_left_to_annotate }}</h5>
+  <h3><a href="{% url 'annotate-random-task' %}">Get random task</a></h3>
   <table>
     <tr>
       <th>Task</th>
       <th>Annotated</th>
       <th>Left</th>
+      <th>Assigned To</th>
     </tr>
     {% for task in tasks %}
     <tr>
       <td><a href="{% url 'annotate-task' task.id %}">{{ task.name }}</a></td>
       <td>{{ task.annotated }}</td>
       <td>{{ task.to_annotate }}</td>
+      <td>{{ task.user }}</td>
     </tr>
   {% endfor %}
   </table>

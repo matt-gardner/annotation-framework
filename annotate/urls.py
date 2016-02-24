@@ -23,6 +23,8 @@ urlpatterns = [
         annotate.views.pool_view_all_annotations, name='annotate-pool-view-annotations'),
     url(r'^pool-results/' + pool_id + '$',
         annotate.views.pool_results, name='annotate-pool-view-results'),
+    url(r'^random-task$',
+        annotate.views.get_random_task, name='annotate-random-task'),
     url(r'^ajax/annotate-instance$',
         annotate.views.annotate, name='annotate-ajax-annotate-instance'),
 ]

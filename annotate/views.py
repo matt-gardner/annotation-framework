@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
 from django.shortcuts import render
 
 from annotate.models import Annotation
@@ -21,7 +22,7 @@ def home(request):
     context = base_context()
     context['methods'] = Method.objects.all()
     TaskTuple = namedtuple('TaskTuple',
-                           ['name', 'id', 'to_annotate', 'annotated'])
+                           ['name', 'id', 'to_annotate', 'annotated', 'user'])
     tasks = []
     annotated_instances = set(
             Annotation.objects.values_list('instance_id', flat=True))
@@ -40,12 +41,17 @@ def home(request):
                 if instance in annotated_instances:
                     annotated.add(instance)
         if not selected: continue
+        user = task.assignedTo.username if task.assignedTo else ''
         tasks.append(TaskTuple(name=task.name,
                                id=task.id,
                                to_annotate=len(instances) - len(annotated),
-                               annotated=len(annotated)))
+                               annotated=len(annotated),
+                               user=user))
     tasks.sort(key=lambda x: (-x.to_annotate, x.name))
     context['tasks'] = tasks
+    context['total_annotations'] = Annotation.objects.count
+    context['total_instances'] = Instance.objects.count
+    context['total_left_to_annotate'] = len(Instance.objects.filter(annotation__isnull=True))
     return render(request, "main.html", context)
 
 
@@ -145,6 +151,37 @@ def pool_unannotated(request, pool_id):
     return render(request, "pool.html", context)
 
 
+@login_required
+def get_random_task(request):
+    tasks = []
+    annotated_instances = set(
+            Annotation.objects.values_list('instance_id', flat=True))
+    pool_instances = defaultdict(list)
+    for i in InstancePool.instances.through.objects.all():
+        pool_instances[i.instancepool_id].append(i.instance_id)
+    for task in Task.objects.filter(assignedTo__isnull=True):
+        instances = set()
+        annotated = set()
+        selected = False
+        for pool in task.instancepool_set.all():
+            if not pool.selected: continue
+            selected = True
+            for instance in pool_instances[pool.id]:
+                instances.add(instance)
+                if instance in annotated_instances:
+                    annotated.add(instance)
+        if not selected: continue
+        if len(instances.difference(annotated)) > 0:
+            tasks.append(task)
+    if len(tasks) == 0:
+        return redirect('annotate-home')
+    random.shuffle(tasks)
+    task = tasks[0]
+    task.assignedTo = request.user
+    task.save()
+    return redirect('annotate-task', task_id=task.id)
+
+
 def pool_view_all_annotations(request, pool_id):
     context = base_context()
     pool = get_object_or_404(InstancePool, pk=pool_id)
@@ -211,6 +248,10 @@ def annotate(request):
     instance_id = request.GET['instance_id']
     value = request.GET['value']
     instance = get_object_or_404(Instance, pk=instance_id)
+    task = instance.task
+    if not task.assignedTo:
+        task.assignedTo = request.user
+        task.save()
     try:
         annotation = Annotation.objects.get(instance=instance,
                                             user=request.user)
