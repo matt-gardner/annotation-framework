@@ -45,6 +45,19 @@ def main():
         print ' %.4f ' % final_metrics[method]['MRR'],
         print '     %.4f ' % final_metrics[method]['MeanP@10'],
         print '     %.4f ' % final_metrics[method]['MeanP@25']
+    # This bit prints out the per-task per-iteration P@10 in the format used
+    # by Tom's scripts for generating AAAI15 style tables/graphs
+    print ''
+    for method in predictions:
+        for task in predictions[method]:
+            prediction_list = predictions[method][task]
+            prediction_list.sort(key=lambda x: x[1])
+            prediction_list = [x[0] for x in prediction_list]
+            metrics = get_metrics_from_predictions(prediction_list,
+                                                   annotations[task])
+            print '%s' % method,
+            print '%s' % task,
+            print '%f' % metrics['P@10']
 
 
 def read_annotations(filename):

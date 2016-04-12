@@ -22,15 +22,9 @@ SECRET_KEY = 'j%#rs_==ovj*nbmrj#1@577&eb(!#5!t%%-cerk^z3&6$uw7(3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ os.path.join(BASE_DIR, 'templates') ],
-        'OPTIONS': {
-            'debug': True,
-        },
-    },
-]
+TEMPLATE_DEBUG = True
+
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
 ALLOWED_HOSTS = []
 
@@ -69,6 +63,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ATOMIC_REQUESTS': True
     }
 }
 
