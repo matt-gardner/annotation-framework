@@ -21,7 +21,6 @@ from annotate.models import Task
 
 @transaction.atomic
 def main(data_file, method_name):
-    #transaction.set_autocommit(False)
     method = Method(name=method_name)
     method.save()
     tasks = {}
@@ -41,8 +40,6 @@ def main(data_file, method_name):
                                 ranking=rank)
         prediction.save()
     sample_instances_for_pool(task_instances)
-    #transaction.commit()
-    #transaction.set_autocommit(True)
 
 
 def get_instance(text, task):
